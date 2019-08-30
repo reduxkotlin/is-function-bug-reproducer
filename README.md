@@ -16,7 +16,9 @@ class FunctionCheckTest {
 ```
 
 To run:
+
 ./gradlew jvmTest  <----  passes
+
 ./gradlew jsTest   <----  fails
 
 Originally thought this was a bug with typealias, however the bug exists with functions.
