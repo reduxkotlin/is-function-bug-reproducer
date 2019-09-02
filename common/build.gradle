@@ -14,6 +14,21 @@ kotlin {
     targets {
         js()
         jvm()
+        //  iOS commented out b/c appling test to JS & iOS does not work.  Comment JS tests for iOS to work
+
+        def buildForDevice = project.findProperty("device")?.toBoolean() ?: false
+        def iosPreset = (buildForDevice) ? presets.iosArm64 : presets.iosX64
+        fromPreset(iosPreset, 'ios') {
+            binaries {
+                framework {
+                    // Disable bitcode embedding for the simulator build.
+                    if (!buildForDevice) {
+                        embedBitcode("disable")
+                    }
+                }
+            }
+        }
+
     }
     sourceSets {
         commonMain {
@@ -47,16 +62,52 @@ kotlin {
                 implementation kotlin("stdlib-js")
             }
         }
+        iosTest {
+            dependsOn commonTest
+        }
 
     }
 
 }
 
+
+task iosTest {
+    def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
+    dependsOn 'linkDebugTestIos'
+    group = JavaBasePlugin.VERIFICATION_GROUP
+    description = "Runs tests for target 'ios' on an iOS simulator"
+
+    doLast {
+        def binary = kotlin.targets.ios.binaries.getTest('DEBUG').outputFile
+        exec {
+            commandLine 'xcrun', 'simctl', 'spawn', device, binary.absolutePath
+        }
+    }
+}
+
+task copyFramework {
+    def buildType = project.findProperty("kotlin.build.type") ?: "DEBUG"
+    dependsOn "link${buildType.toLowerCase().capitalize()}FrameworkIos"
+
+    doLast {
+        def srcFile = kotlin.targets.ios.binaries.getFramework(buildType).outputFile
+        def targetDir = getProperty("configuration.build.dir")
+        copy {
+            from srcFile.parent
+            into targetDir
+            include 'greeting.framework/**'
+            include 'greeting.framework.dSYM'
+        }
+    }
+}
+
+
+
 // workaround for https://youtrack.jetbrains.com/issue/KT-27170
 configurations {
     compileClasspath
 }
-
+/*
 //Workaround to copy kotlin libraries so they are visible during testing
 def jsLibDir = "$compileKotlinJs.destinationDir/lib"
 def jsTestLibDir = "$compileTestKotlinJs.destinationDir/lib"
@@ -100,3 +151,5 @@ task runMocha(type: NodeTask, dependsOn: [installMocha, jsMainClasses, jsTestCla
     args = [compileTestKotlinJs.outputFile]
 }
 jsTest.dependsOn runMocha
+
+ */
