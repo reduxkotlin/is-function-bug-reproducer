@@ -15,7 +15,7 @@ kotlin {
         js()
         jvm()
         //  iOS commented out b/c appling test to JS & iOS does not work.  Comment JS tests for iOS to work
-
+        /*
         def buildForDevice = project.findProperty("device")?.toBoolean() ?: false
         def iosPreset = (buildForDevice) ? presets.iosArm64 : presets.iosX64
         fromPreset(iosPreset, 'ios') {
@@ -28,6 +28,7 @@ kotlin {
                 }
             }
         }
+         */
 
     }
     sourceSets {
@@ -62,14 +63,15 @@ kotlin {
                 implementation kotlin("stdlib-js")
             }
         }
-        iosTest {
-            dependsOn commonTest
-        }
+//        iosTest {
+//            dependsOn commonTest
+//        }
 
     }
 
 }
 
+/*
 
 task iosTest {
     def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
@@ -101,13 +103,14 @@ task copyFramework {
     }
 }
 
+ */
+
 
 
 // workaround for https://youtrack.jetbrains.com/issue/KT-27170
 configurations {
     compileClasspath
 }
-/*
 //Workaround to copy kotlin libraries so they are visible during testing
 def jsLibDir = "$compileKotlinJs.destinationDir/lib"
 def jsTestLibDir = "$compileTestKotlinJs.destinationDir/lib"
@@ -152,4 +155,3 @@ task runMocha(type: NodeTask, dependsOn: [installMocha, jsMainClasses, jsTestCla
 }
 jsTest.dependsOn runMocha
 
- */
