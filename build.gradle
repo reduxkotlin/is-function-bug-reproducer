@@ -28,7 +28,3 @@ allprojects {
         maven { url "https://kotlin.bintray.com/kotlinx" }
     }
 }
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
