@@ -1,5 +1,8 @@
 # Function<*> is check bug
 
+## **** FIXED AS OF KOTLIN 1.3.70 ****
+
+
 This is a reproducer of a bug in Kotlin as [reported in youtrack](https://youtrack.jetbrains.com/issue/KT-33149).
 
 ```kotlin
